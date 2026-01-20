@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const { AppError } = require('../middleware/errorHandler');
-const logger = require('../utils/logger');
+const User = require('./auth.model');
+const { AppError } = require('../../middleware/errorHandler');
+const logger = require('../../utils/logger');
 
 class AuthController {
   // Register new user

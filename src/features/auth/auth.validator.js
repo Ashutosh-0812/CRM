@@ -18,7 +18,7 @@ const registerValidation = [
   
   body('role')
     .optional()
-    .isIn(['admin', 'manager', 'user']).withMessage('Invalid role')
+    .isIn(['admin', 'user']).withMessage('Invalid role. Must be admin or user')
 ];
 
 const loginValidation = [

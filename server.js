@@ -3,9 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const logger = require('./src/utils/logger');
 const errorHandler = require('./src/middleware/errorHandler');
-const authRoutes = require('./src/routes/authRoutes');
-const customerRoutes = require('./src/routes/customerRoutes');
-const leadRoutes = require('./src/routes/leadRoutes');
+const authRoutes = require('./src/features/auth/auth.routes');
+const customerRoutes = require('./src/features/customer/customer.routes');
+const leadRoutes = require('./src/features/lead/lead.routes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

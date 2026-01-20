@@ -1,6 +1,6 @@
-const Customer = require('../models/Customer');
-const { AppError } = require('../middleware/errorHandler');
-const logger = require('../utils/logger');
+const Customer = require('./customer.model');
+const { AppError } = require('../../middleware/errorHandler');
+const logger = require('../../utils/logger');
 
 class CustomerController {
   // Create new customer

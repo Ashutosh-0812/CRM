@@ -1,6 +1,6 @@
-const Lead = require('../models/Lead');
-const { AppError } = require('../middleware/errorHandler');
-const logger = require('../utils/logger');
+const Lead = require('./lead.model');
+const { AppError } = require('../../middleware/errorHandler');
+const logger = require('../../utils/logger');
 
 class LeadController {
   // Create new lead

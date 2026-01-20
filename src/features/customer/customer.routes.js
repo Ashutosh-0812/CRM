@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const CustomerController = require('../controllers/customerController');
-const authMiddleware = require('../middleware/authMiddleware');
-const validate = require('../middleware/validate');
-const { createCustomerValidation, updateCustomerValidation } = require('../validators/customerValidator');
+const CustomerController = require('./customer.controller');
+const authMiddleware = require('../../middleware/authMiddleware');
+const validate = require('../../middleware/validate');
+const { createCustomerValidation, updateCustomerValidation } = require('./customer.validator');
 
 // All customer routes require authentication
 router.use(authMiddleware);
