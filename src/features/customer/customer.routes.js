@@ -11,7 +11,7 @@ router.use(authMiddleware);
 // @route   POST /api/customers
 // @desc    Create a new customer
 // @access  Private
-router.post('/', createCustomerValidation, validate, CustomerController.createCustomer);
+router.post('/', validate(createCustomerValidation), CustomerController.createCustomer);
 
 // @route   GET /api/customers
 // @desc    Get all customers with pagination and search
@@ -27,7 +27,7 @@ router.get('/:id', CustomerController.getCustomerById);
 // @route   PUT /api/customers/:id
 // @desc    Update customer
 // @access  Private
-router.put('/:id', updateCustomerValidation, validate, CustomerController.updateCustomer);
+router.put('/:id', validate(updateCustomerValidation), CustomerController.updateCustomer);
 
 // @route   DELETE /api/customers/:id
 // @desc    Delete customer

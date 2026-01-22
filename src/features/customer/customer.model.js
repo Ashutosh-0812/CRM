@@ -3,7 +3,7 @@ const { pool } = require('../../config/database');
 class Customer {
   static async create(customerData) {
     const { name, email, phone, company, address, status = 'active', created_by } = customerData;
-    const [result] = await pool.query(
+    const [result] = await pool.execute(
       'INSERT INTO customers (name, email, phone, company, address, status, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [name, email, phone, company, address, status, created_by]
     );
@@ -12,6 +12,10 @@ class Customer {
 
   static async findAll(page = 1, limit = 10, search = '') {
     const offset = (page - 1) * limit;
+    // Ensure limit and offset are integers
+    const limitInt = parseInt(limit) || 10;
+    const offsetInt = parseInt(offset) || 0;
+    
     let query = 'SELECT * FROM customers';
     let countQuery = 'SELECT COUNT(*) as total FROM customers';
     const params = [];
@@ -24,10 +28,10 @@ class Customer {
       params.push(searchParam, searchParam, searchParam);
     }
 
-    query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+    query += ` ORDER BY created_at DESC LIMIT ${limitInt} OFFSET ${offsetInt}`;
     
-    const [rows] = await pool.query(query, [...params, limit, offset]);
-    const [countResult] = await pool.query(countQuery, params);
+    const [rows] = await pool.execute(query, params);
+    const [countResult] = await pool.execute(countQuery, params);
     
     return {
       data: rows,
@@ -41,13 +45,13 @@ class Customer {
   }
 
   static async findById(id) {
-    const [rows] = await pool.query('SELECT * FROM customers WHERE id = ?', [id]);
+    const [rows] = await pool.execute('SELECT * FROM customers WHERE id = ?', [id]);
     return rows[0];
   }
 
   static async update(id, customerData) {
     const { name, email, phone, company, address, status } = customerData;
-    const [result] = await pool.query(
+    const [result] = await pool.execute(
       'UPDATE customers SET name = ?, email = ?, phone = ?, company = ?, address = ?, status = ? WHERE id = ?',
       [name, email, phone, company, address, status, id]
     );
@@ -55,7 +59,7 @@ class Customer {
   }
 
   static async delete(id) {
-    const [result] = await pool.query('DELETE FROM customers WHERE id = ?', [id]);
+    const [result] = await pool.execute('DELETE FROM customers WHERE id = ?', [id]);
     return result.affectedRows;
   }
 }

@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const logger = require('./src/utils/logger');
+const cookieParser = require('cookie-parser');
 const errorHandler = require('./src/middleware/errorHandler');
 const authRoutes = require('./src/features/auth/auth.routes');
 const customerRoutes = require('./src/features/customer/customer.routes');
@@ -12,19 +12,12 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || '*'
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Request logging middleware
-app.use((req, res, next) => {
-  logger.info(`${req.method} ${req.url}`, {
-    ip: req.ip,
-    userAgent: req.get('user-agent')
-  });
-  next();
-});
+app.use(cookieParser());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -53,9 +46,8 @@ app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => {
-  logger.info(`Server is running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🚀 CRM Backend server started on http://localhost:${PORT}`);
+  console.log(` CRM Backend server started on http://localhost:${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 module.exports = app;

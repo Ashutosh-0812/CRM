@@ -1,6 +1,5 @@
 const Customer = require('./customer.model');
 const { AppError } = require('../../middleware/errorHandler');
-const logger = require('../../utils/logger');
 
 class CustomerController {
   // Create new customer
@@ -17,8 +16,6 @@ class CustomerController {
         status,
         created_by: req.user.id
       });
-
-      logger.info(`Customer created: ${customerId} by user ${req.user.id}`);
 
       res.status(201).json({
         success: true,
@@ -41,8 +38,6 @@ class CustomerController {
       const search = req.query.search || '';
 
       const result = await Customer.findAll(page, limit, search);
-
-      logger.info(`Fetched ${result.data.length} customers (page ${page})`);
 
       res.status(200).json({
         success: true,
@@ -92,8 +87,6 @@ class CustomerController {
         throw new AppError('Customer not found', 404);
       }
 
-      logger.info(`Customer updated: ${id} by user ${req.user.id}`);
-
       res.status(200).json({
         success: true,
         message: 'Customer updated successfully'
@@ -116,8 +109,6 @@ class CustomerController {
       if (affectedRows === 0) {
         throw new AppError('Customer not found', 404);
       }
-
-      logger.info(`Customer deleted: ${id} by user ${req.user.id}`);
 
       res.status(200).json({
         success: true,

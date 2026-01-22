@@ -1,9 +1,7 @@
 const Lead = require('./lead.model');
 const { AppError } = require('../../middleware/errorHandler');
-const logger = require('../../utils/logger');
 
 class LeadController {
-  // Create new lead
   static async createLead(req, res, next) {
     try {
       const { name, email, phone, company, source, status, notes, assigned_to } = req.body;
@@ -19,8 +17,6 @@ class LeadController {
         assigned_to
       });
 
-      logger.info(`Lead created: ${leadId} by user ${req.user.id}`);
-
       res.status(201).json({
         success: true,
         message: 'Lead created successfully',
@@ -31,7 +27,7 @@ class LeadController {
     }
   }
 
-  // Get all leads with pagination, search, and status filter
+ 
   static async getAllLeads(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -40,8 +36,6 @@ class LeadController {
       const status = req.query.status || '';
 
       const result = await Lead.findAll(page, limit, search, status);
-
-      logger.info(`Fetched ${result.data.length} leads (page ${page})`);
 
       res.status(200).json({
         success: true,
@@ -52,7 +46,7 @@ class LeadController {
     }
   }
 
-  // Get single lead by ID
+ 
   static async getLeadById(req, res, next) {
     try {
       const { id } = req.params;
@@ -72,7 +66,7 @@ class LeadController {
     }
   }
 
-  // Update lead
+
   static async updateLead(req, res, next) {
     try {
       const { id } = req.params;
@@ -93,8 +87,6 @@ class LeadController {
         throw new AppError('Lead not found', 404);
       }
 
-      logger.info(`Lead updated: ${id} by user ${req.user.id}`);
-
       res.status(200).json({
         success: true,
         message: 'Lead updated successfully'
@@ -104,7 +96,7 @@ class LeadController {
     }
   }
 
-  // Delete lead
+
   static async deleteLead(req, res, next) {
     try {
       const { id } = req.params;
@@ -114,8 +106,6 @@ class LeadController {
       if (affectedRows === 0) {
         throw new AppError('Lead not found', 404);
       }
-
-      logger.info(`Lead deleted: ${id} by user ${req.user.id}`);
 
       res.status(200).json({
         success: true,

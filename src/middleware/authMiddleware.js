@@ -1,18 +1,20 @@
 const jwt = require('jsonwebtoken');
 const { AppError } = require('./errorHandler');
-const logger = require('../utils/logger');
 
 const authMiddleware = async (req, res, next) => {
   try {
-    // Get token from header
-    const authHeader = req.headers.authorization;
+    let token;
+
+    // Check cookies first, then Authorization header
+    if (req.cookies && req.cookies.accessToken) {
+      token = req.cookies.accessToken;
+    } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      token = req.headers.authorization.substring(7);
+    }
     
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!token) {
       throw new AppError('No token provided. Authorization denied.', 401);
     }
-
-    // Extract token
-    const token = authHeader.substring(7);
 
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -20,7 +22,6 @@ const authMiddleware = async (req, res, next) => {
     // Add user info to request
     req.user = decoded;
     
-    logger.info(`User ${decoded.id} authenticated successfully`);
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {

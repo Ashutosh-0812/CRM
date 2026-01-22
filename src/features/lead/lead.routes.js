@@ -5,33 +5,25 @@ const authMiddleware = require('../../middleware/authMiddleware');
 const validate = require('../../middleware/validate');
 const { createLeadValidation, updateLeadValidation } = require('./lead.validator');
 
-// All lead routes require authentication
 router.use(authMiddleware);
 
-// @route   POST /api/leads
-// @desc    Create a new lead
-// @access  Private
-router.post('/', createLeadValidation, validate, LeadController.createLead);
+//  POST /api/leads
 
-// @route   GET /api/leads
-// @desc    Get all leads with pagination, search, and status filter
-// @access  Private
-// Query params: page, limit, search, status
+router.post('/', validate(createLeadValidation), LeadController.createLead);
+
+//   GET /api/leads
+
 router.get('/', LeadController.getAllLeads);
 
-// @route   GET /api/leads/:id
-// @desc    Get lead by ID
-// @access  Private
+//   GET /api/leads/:id
+
 router.get('/:id', LeadController.getLeadById);
 
-// @route   PUT /api/leads/:id
-// @desc    Update lead
-// @access  Private
-router.put('/:id', updateLeadValidation, validate, LeadController.updateLead);
+//   PUT /api/leads/:id
+router.put('/:id', validate(updateLeadValidation), LeadController.updateLead);
 
-// @route   DELETE /api/leads/:id
-// @desc    Delete lead
-// @access  Private
+// DELETE /api/leads/:id
+
 router.delete('/:id', LeadController.deleteLead);
 
 module.exports = router;

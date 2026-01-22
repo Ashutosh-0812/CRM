@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+
 // Create a connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
@@ -19,7 +20,7 @@ const pool = mysql.createPool({
 const testConnection = async () => {
   try {
     const connection = await pool.getConnection();
-    console.log('✅ Database connected successfully');
+    console.log(' Database connected successfully');
     connection.release();
     return true;
   } catch (error) {
@@ -81,10 +82,10 @@ const initializeDatabase = async () => {
       )
     `);
 
-    console.log('✅ Database tables initialized successfully');
+    console.log(' Database tables initialized successfully');
     connection.release();
   } catch (error) {
-    console.error('❌ Database initialization failed:', error.message);
+    console.error('Database initialization failed:', error.message);
     throw error;
   }
 };

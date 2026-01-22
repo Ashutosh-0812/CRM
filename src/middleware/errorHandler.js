@@ -1,5 +1,3 @@
-const logger = require('../utils/logger');
-
 class AppError extends Error {
   constructor(message, statusCode) {
     super(message);
@@ -12,12 +10,6 @@ class AppError extends Error {
 const errorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.message = err.message || 'Internal Server Error';
-
-  // Log error
-  logger.error(`${err.statusCode} - ${err.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`, {
-    error: err.message,
-    stack: err.stack
-  });
 
   // Don't leak error details in production
   const errorResponse = {

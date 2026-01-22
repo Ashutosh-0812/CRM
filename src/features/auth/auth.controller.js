@@ -1,10 +1,40 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const User = require('./auth.model');
 const { AppError } = require('../../middleware/errorHandler');
-const logger = require('../../utils/logger');
 
 class AuthController {
+  // Helper to generate tokens
+  static generateTokens(user) {
+    const accessToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
+    );
+
+    const refreshToken = crypto.randomBytes(64).toString('hex');
+
+    return { accessToken, refreshToken };
+  }
+
+  // Helper to set cookies
+  static setTokenCookies(res, accessToken, refreshToken) {
+    // Access token cookie - short lived
+    res.cookie('accessToken', accessToken, {
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 15 * 60 * 1000 // 15 minutes
+    });
+
+    // Refresh token cookie - long lived
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+  }
   // Register new user
   static async register(req, res, next) {
     try {
@@ -27,12 +57,28 @@ class AuthController {
         role: role || 'user'
       });
 
-      logger.info(`New user registered: ${email}`);
+      // Generate tokens
+      const { accessToken, refreshToken } = AuthController.generateTokens({
+        id: userId,
+        email,
+        role: role || 'user'
+      });
+
+      // Save refresh token to database
+      await User.saveRefreshToken(userId, refreshToken);
+
+      // Set cookies
+      AuthController.setTokenCookies(res, accessToken, refreshToken);
 
       res.status(201).json({
         success: true,
         message: 'User registered successfully',
-        data: { userId, email }
+        data: { 
+          userId, 
+          email,
+          accessToken,
+          refreshToken
+        }
       });
     } catch (error) {
       next(error);
@@ -56,20 +102,21 @@ class AuthController {
         throw new AppError('Invalid credentials', 401);
       }
 
-      // Generate JWT token
-      const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
-      );
+      // Generate tokens
+      const { accessToken, refreshToken } = AuthController.generateTokens(user);
 
-      logger.info(`User logged in: ${email}`);
+      // Save refresh token to database
+      await User.saveRefreshToken(user.id, refreshToken);
+
+      // Set cookies
+      AuthController.setTokenCookies(res, accessToken, refreshToken);
 
       res.status(200).json({
         success: true,
         message: 'Login successful',
         data: {
-          token,
+          accessToken,
+          refreshToken,
           user: {
             id: user.id,
             name: user.name,
@@ -95,6 +142,62 @@ class AuthController {
       res.status(200).json({
         success: true,
         data: user
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Refresh access token
+  static async refreshToken(req, res, next) {
+    try {
+      const { refreshToken } = req.cookies;
+
+      if (!refreshToken) {
+        throw new AppError('Refresh token not provided', 401);
+      }
+
+      // Find user by refresh token
+      const user = await User.findByRefreshToken(refreshToken);
+      if (!user) {
+        throw new AppError('Invalid refresh token', 401);
+      }
+
+      // Generate new tokens
+      const { accessToken, refreshToken: newRefreshToken } = AuthController.generateTokens(user);
+
+      // Update refresh token in database
+      await User.saveRefreshToken(user.id, newRefreshToken);
+
+      // Set new cookies
+      AuthController.setTokenCookies(res, accessToken, newRefreshToken);
+
+      res.status(200).json({
+        success: true,
+        message: 'Token refreshed successfully',
+        data: {
+          accessToken,
+          refreshToken: newRefreshToken
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Logout user
+  static async logout(req, res, next) {
+    try {
+      // Clear refresh token from database
+      await User.clearRefreshToken(req.user.id);
+
+      // Clear cookies
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
+
+      res.status(200).json({
+        success: true,
+        message: 'Logged out successfully'
       });
     } catch (error) {
       next(error);
