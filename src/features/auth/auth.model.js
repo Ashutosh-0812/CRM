@@ -12,7 +12,7 @@ class User {
 
   static async findByEmail(email) {
     const [rows] = await pool.execute(
-      'SELECT * FROM users WHERE email = ?',
+      'SELECT id, email, password, role, is_verified FROM users WHERE email = ?',
       [email]
     );
     return rows[0];
@@ -20,10 +20,25 @@ class User {
 
   static async findById(id) {
     const [rows] = await pool.execute(
-      'SELECT id, name, email, role, created_at, updated_at FROM users WHERE id = ?',
+      'SELECT id, name, email, role, is_verified, created_at, updated_at FROM users WHERE id = ?',
       [id]
     );
     return rows[0];
+  }
+
+  static async findAll() {
+    const [rows] = await pool.execute(
+      'SELECT id, name, email, role, is_verified, created_at FROM users ORDER BY created_at DESC'
+    );
+    return rows;
+  }
+
+  static async verifyUser(id) {
+    const [result] = await pool.execute(
+      'UPDATE users SET is_verified = TRUE WHERE id = ?',
+      [id]
+    );
+    return result.affectedRows;
   }
 
   static async update(id, userData) {
@@ -50,7 +65,7 @@ class User {
 
   static async findByRefreshToken(refreshToken) {
     const [rows] = await pool.execute(
-      'SELECT id, name, email, role FROM users WHERE refresh_token = ?',
+      'SELECT id, name, email, role, is_verified FROM users WHERE refresh_token = ?',
       [refreshToken]
     );
     return rows[0];

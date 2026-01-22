@@ -99,6 +99,17 @@ class CustomerController {
     try {
       const { id } = req.params;
 
+      // Check ownership if not admin
+      if (req.user.role !== 'admin') {
+        const customer = await Customer.findById(id);
+        if (!customer) {
+          throw new AppError('Customer not found', 404);
+        }
+        if (customer.created_by !== req.user.id) {
+          throw new AppError('Access denied. You can only delete your own customers.', 403);
+        }
+      }
+
       const affectedRows = await Customer.delete(id);
 
       if (affectedRows === 0) {

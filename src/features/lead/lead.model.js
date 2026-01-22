@@ -2,10 +2,10 @@ const { pool } = require('../../config/database');
 
 class Lead {
   static async create(leadData) {
-    const { name, email, phone, company, source, status = 'new', notes, assigned_to } = leadData;
+    const { name, email, phone, company, source, status = 'new', notes, assigned_to, created_by } = leadData;
     const [result] = await pool.execute(
-      'INSERT INTO leads (name, email, phone, company, source, status, notes, assigned_to) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [name, email, phone, company, source, status, notes, assigned_to]
+      'INSERT INTO leads (name, email, phone, company, source, status, notes, assigned_to, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, email, phone, company, source, status, notes, assigned_to, created_by]
     );
     return result.insertId;
   }

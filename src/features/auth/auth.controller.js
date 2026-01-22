@@ -7,7 +7,7 @@ const { AppError } = require('../../middleware/errorHandler');
 class AuthController {
   static generateTokens(user) {
     const accessToken = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role, is_verified: user.is_verified },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '15m' }
     );
@@ -173,6 +173,65 @@ class AuthController {
       res.status(200).json({
         success: true,
         message: 'Logged out successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Admin: Get all users
+  static async getAllUsers(req, res, next) {
+    try {
+      const users = await User.findAll();
+
+      res.status(200).json({
+        success: true,
+        data: users
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Admin: Verify user
+  static async verifyUser(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      const affectedRows = await User.verifyUser(id);
+      
+      if (affectedRows === 0) {
+        throw new AppError('User not found', 404);
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'User verified successfully'
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Admin: Delete user
+  static async deleteUser(req, res, next) {
+    try {
+      const { id } = req.params;
+
+      // Prevent self-deletion
+      if (parseInt(id) === req.user.id) {
+        throw new AppError('You cannot delete your own account', 400);
+      }
+
+      const affectedRows = await User.delete(id);
+      
+      if (affectedRows === 0) {
+        throw new AppError('User not found', 404);
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully'
       });
     } catch (error) {
       next(error);

@@ -6,7 +6,7 @@ class LeadController {
     try {
       const { name, email, phone, company, source, status, notes, assigned_to } = req.body;
 
-      const leadId = await Lead.create({
+     const leadId = await Lead.create({
         name,
         email,
         phone,
@@ -14,7 +14,8 @@ class LeadController {
         source,
         status,
         notes,
-        assigned_to
+        assigned_to,
+        created_by: req.user.id
       });
 
       res.status(201).json({
@@ -23,7 +24,12 @@ class LeadController {
         data: { leadId }
       });
     } catch (error) {
-      next(error);
+      res.status(201).json({
+        success :false,
+        message : 'internal server error ',
+
+      })
+      next();
     }
   }
 
@@ -100,6 +106,17 @@ class LeadController {
   static async deleteLead(req, res, next) {
     try {
       const { id } = req.params;
+
+      // Check ownership if not admin
+      if (req.user.role !== 'admin') {
+        const lead = await Lead.findById(id);
+        if (!lead) {
+          throw new AppError('Lead not found', 404);
+        }
+        if (lead.created_by !== req.user.id) {
+          throw new AppError('Access denied. You can only delete your own leads.', 403);
+        }
+      }
 
       const affectedRows = await Lead.delete(id);
 
