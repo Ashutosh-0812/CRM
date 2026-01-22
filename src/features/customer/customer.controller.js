@@ -2,7 +2,6 @@ const Customer = require('./customer.model');
 const { AppError } = require('../../middleware/errorHandler');
 
 class CustomerController {
-  // Create new customer
   static async createCustomer(req, res, next) {
     try {
       const { name, email, phone, company, address, status } = req.body;
@@ -30,7 +29,6 @@ class CustomerController {
     }
   }
 
-  // Get all customers with pagination and search
   static async getAllCustomers(req, res, next) {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -48,7 +46,6 @@ class CustomerController {
     }
   }
 
-  // Get single customer by ID
   static async getCustomerById(req, res, next) {
     try {
       const { id } = req.params;
@@ -68,7 +65,6 @@ class CustomerController {
     }
   }
 
-  // Update customer
   static async updateCustomer(req, res, next) {
     try {
       const { id } = req.params;
@@ -99,7 +95,6 @@ class CustomerController {
     }
   }
 
-  // Delete customer
   static async deleteCustomer(req, res, next) {
     try {
       const { id } = req.params;

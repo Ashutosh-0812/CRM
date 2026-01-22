@@ -5,7 +5,6 @@ const User = require('./auth.model');
 const { AppError } = require('../../middleware/errorHandler');
 
 class AuthController {
-  // Helper to generate tokens
   static generateTokens(user) {
     const accessToken = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
@@ -18,16 +17,13 @@ class AuthController {
     return { accessToken, refreshToken };
   }
 
-  // Helper to set cookies
   static setTokenCookies(res, accessToken, refreshToken) {
-    // Access token cookie - short lived
     res.cookie('accessToken', accessToken, {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000 // 15 minutes
     });
 
-    // Refresh token cookie - long lived
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -35,21 +31,18 @@ class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
   }
-  // Register new user
+
   static async register(req, res, next) {
     try {
       const { name, email, password, role } = req.body;
 
-      // Check if user already exists
       const existingUser = await User.findByEmail(email);
       if (existingUser) {
         throw new AppError('User with this email already exists', 400);
       }
 
-      // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create user
       const userId = await User.create({
         name,
         email,
@@ -57,17 +50,14 @@ class AuthController {
         role: role || 'user'
       });
 
-      // Generate tokens
       const { accessToken, refreshToken } = AuthController.generateTokens({
         id: userId,
         email,
         role: role || 'user'
       });
 
-      // Save refresh token to database
       await User.saveRefreshToken(userId, refreshToken);
 
-      // Set cookies
       AuthController.setTokenCookies(res, accessToken, refreshToken);
 
       res.status(201).json({
@@ -85,30 +75,24 @@ class AuthController {
     }
   }
 
-  // Login user
   static async login(req, res, next) {
     try {
       const { email, password } = req.body;
 
-      // Find user
       const user = await User.findByEmail(email);
       if (!user) {
         throw new AppError('Invalid credentials', 401);
       }
 
-      // Verify password
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         throw new AppError('Invalid credentials', 401);
       }
 
-      // Generate tokens
       const { accessToken, refreshToken } = AuthController.generateTokens(user);
 
-      // Save refresh token to database
       await User.saveRefreshToken(user.id, refreshToken);
 
-      // Set cookies
       AuthController.setTokenCookies(res, accessToken, refreshToken);
 
       res.status(200).json({
@@ -130,7 +114,6 @@ class AuthController {
     }
   }
 
-  // Get current user profile
   static async getProfile(req, res, next) {
     try {
       const user = await User.findById(req.user.id);
@@ -148,7 +131,6 @@ class AuthController {
     }
   }
 
-  // Refresh access token
   static async refreshToken(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
@@ -157,19 +139,15 @@ class AuthController {
         throw new AppError('Refresh token not provided', 401);
       }
 
-      // Find user by refresh token
       const user = await User.findByRefreshToken(refreshToken);
       if (!user) {
         throw new AppError('Invalid refresh token', 401);
       }
 
-      // Generate new tokens
       const { accessToken, refreshToken: newRefreshToken } = AuthController.generateTokens(user);
 
-      // Update refresh token in database
       await User.saveRefreshToken(user.id, newRefreshToken);
 
-      // Set new cookies
       AuthController.setTokenCookies(res, accessToken, newRefreshToken);
 
       res.status(200).json({
@@ -185,13 +163,10 @@ class AuthController {
     }
   }
 
-  // Logout user
   static async logout(req, res, next) {
     try {
-      // Clear refresh token from database
       await User.clearRefreshToken(req.user.id);
 
-      // Clear cookies
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
 

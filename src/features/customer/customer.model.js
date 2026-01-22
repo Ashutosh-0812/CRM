@@ -12,7 +12,6 @@ class Customer {
 
   static async findAll(page = 1, limit = 10, search = '') {
     const offset = (page - 1) * limit;
-    // Ensure limit and offset are integers
     const limitInt = parseInt(limit) || 10;
     const offsetInt = parseInt(offset) || 0;
     

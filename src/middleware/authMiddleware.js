@@ -5,7 +5,6 @@ const authMiddleware = async (req, res, next) => {
   try {
     let token;
 
-    // Check cookies first, then Authorization header
     if (req.cookies && req.cookies.accessToken) {
       token = req.cookies.accessToken;
     } else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
@@ -16,10 +15,8 @@ const authMiddleware = async (req, res, next) => {
       throw new AppError('No token provided. Authorization denied.', 401);
     }
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // Add user info to request
     req.user = decoded;
     
     next();

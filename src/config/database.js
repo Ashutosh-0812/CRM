@@ -1,8 +1,6 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-
-// Create a connection pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',
@@ -16,7 +14,6 @@ const pool = mysql.createPool({
   keepAliveInitialDelay: 0
 });
 
-// Test database connection
 const testConnection = async () => {
   try {
     const connection = await pool.getConnection();
@@ -29,12 +26,10 @@ const testConnection = async () => {
   }
 };
 
-// Initialize database tables
 const initializeDatabase = async () => {
   try {
     const connection = await pool.getConnection();
     
-    // Create Users table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -47,7 +42,6 @@ const initializeDatabase = async () => {
       )
     `);
 
-    // Create Customers table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS customers (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,7 +58,6 @@ const initializeDatabase = async () => {
       )
     `);
 
-    // Create Leads table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS leads (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -90,7 +83,6 @@ const initializeDatabase = async () => {
   }
 };
 
-// Test connection on startup
 testConnection();
 
 module.exports = {
