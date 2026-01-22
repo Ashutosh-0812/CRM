@@ -49,11 +49,43 @@ class Customer {
   }
 
   static async update(id, customerData) {
-    const { name, email, phone, company, address, status } = customerData;
-    const [result] = await pool.execute(
-      'UPDATE customers SET name = ?, email = ?, phone = ?, company = ?, address = ?, status = ? WHERE id = ?',
-      [name, email, phone, company, address, status, id]
-    );
+    const updates = [];
+    const values = [];
+
+    // Only include fields that are actually provided
+    if (customerData.name !== undefined) {
+      updates.push('name = ?');
+      values.push(customerData.name);
+    }
+    if (customerData.email !== undefined) {
+      updates.push('email = ?');
+      values.push(customerData.email);
+    }
+    if (customerData.phone !== undefined) {
+      updates.push('phone = ?');
+      values.push(customerData.phone);
+    }
+    if (customerData.company !== undefined) {
+      updates.push('company = ?');
+      values.push(customerData.company);
+    }
+    if (customerData.address !== undefined) {
+      updates.push('address = ?');
+      values.push(customerData.address);
+    }
+    if (customerData.status !== undefined) {
+      updates.push('status = ?');
+      values.push(customerData.status);
+    }
+
+    if (updates.length === 0) {
+      throw new Error('No fields to update');
+    }
+
+    values.push(id);
+    const query = `UPDATE customers SET ${updates.join(', ')} WHERE id = ?`;
+    
+    const [result] = await pool.execute(query, values);
     return result.affectedRows;
   }
 
