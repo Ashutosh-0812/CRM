@@ -1,12 +1,11 @@
 {
   "name": "crm-backend",
   "version": "1.0.0",
-  "description": "CRM Backend with MySQL, JWT authentication, and MVC architecture",
-  "main": "server.js",
+  "description": "CRM Backend with MySQL, JWT authentication, and Modular architecture",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "setup": "node setup-db.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

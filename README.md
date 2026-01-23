@@ -1,133 +1,172 @@
-# CRM Backend - MySQL with MVC Architecture
+# CRM Backend - Modular Architecture
 
-A comprehensive CRM (Customer Relationship Management) backend system built with Node.js, Express, and MySQL featuring JWT authentication, CRUD operations, pagination, search, validation, error handling, and logging.
+A Customer Relationship Management (CRM) backend application built with Node.js, Express, MySQL, and JWT authentication following a modular architecture pattern.
 
-## 🚀 Features
-
-- **Authentication & Authorization**
-  - JWT-based authentication
-  - Secure password hashing with bcrypt
-  - Role-based access control (admin, manager, user)
-
-- **CRUD Operations**
-  - Complete CRUD for Customers
-  - Complete CRUD for Leads
-  - User management
-
-- **Advanced Features**
-  - Pagination for list endpoints
-  - Search functionality across entities
-  - Status filtering for leads
-  - Input validation using express-validator
-
-- **Error Handling & Logging**
-  - Centralized error handling
-  - Winston logger with daily rotation
-  - Request logging
-  - Environment-based error responses
-
-## 📁 Project Structure (MVC)
+## 📁 Project Structure
 
 ```
 CRM/
-├── src/
-│   ├── config/
-│   │   └── database.js          # MySQL connection & initialization
-│   ├── controllers/
-│   │   ├── authController.js    # Authentication logic
-│   │   ├── customerController.js # Customer CRUD logic
-│   │   └── leadController.js    # Lead CRUD logic
-│   ├── middleware/
-│   │   ├── authMiddleware.js    # JWT verification
-│   │   ├── errorHandler.js      # Error handling
-│   │   └── validate.js          # Validation middleware
-│   ├── models/
-│   │   ├── User.js              # User model
-│   │   ├── Customer.js          # Customer model
-│   │   └── Lead.js              # Lead model
-│   ├── routes/
-│   │   ├── authRoutes.js        # Auth endpoints
-│   │   ├── customerRoutes.js    # Customer endpoints
-│   │   └── leadRoutes.js        # Lead endpoints
-│   ├── validators/
-│   │   ├── authValidator.js     # Auth validation rules
-│   │   ├── customerValidator.js # Customer validation rules
-│   │   └── leadValidator.js     # Lead validation rules
-│   └── utils/
-│       └── logger.js            # Winston logger configuration
-├── database/
-│   └── setup.sql                # Database schema
-├── logs/                        # Application logs (auto-generated)
-├── .env.example                 # Environment variables template
-├── .gitignore
+├── index.js                    # Main entry point
 ├── package.json
-├── server.js                    # Application entry point
-└── README.md
+├── .env                        # Environment variables
+├── database/                   # Database configurations
+│   ├── dbProperties.js         # Database connection properties
+│   ├── index.js                # Database initialization
+│   ├── mongolib.js             # MongoDB library
+│   ├── mysqllib.js             # MySQL library
+│   ├── redislib.js             # Redis library (optional)
+│   └── migration/
+│       └── setup.sql           # Database schema
+├── logging/
+│   └── logging.js              # Winston logger configuration
+├── middlewares/
+│   ├── index.js                # Middleware exports
+│   ├── authMiddleware.js       # JWT authentication
+│   ├── errorHandler.js         # Error handling
+│   ├── roleMiddleware.js       # Role-based access control
+│   └── validateMiddleware.js   # Input validation
+├── modules/                    # Feature modules
+│   ├── index.js
+│   ├── login/                  # Login module
+│   │   ├── index.js            # Route configuration
+│   │   ├── controllers/
+│   │   │   └── loginController.js
+│   │   ├── dao/
+│   │   │   └── loginDao.js
+│   │   ├── services/
+│   │   │   ├── loginService.js
+│   │   │   └── loginTokenService.js
+│   │   └── validators/
+│   │       └── loginValidator.js
+│   ├── register/               # Registration module
+│   │   ├── index.js
+│   │   ├── controllers/
+│   │   │   └── registerController.js
+│   │   ├── dao/
+│   │   │   └── registerDao.js
+│   │   ├── services/
+│   │   │   └── registerServices.js
+│   │   └── validators/
+│   │       └── registerValidator.js
+│   ├── customer/               # Customer management module
+│   │   ├── index.js
+│   │   ├── controllers/
+│   │   │   └── customerController.js
+│   │   ├── dao/
+│   │   │   └── customerDao.js
+│   │   ├── services/
+│   │   │   └── customerService.js
+│   │   └── validators/
+│   │       └── customerValidator.js
+│   └── lead/                   # Lead management module
+│       ├── index.js
+│       ├── controllers/
+│       │   └── leadController.js
+│       ├── dao/
+│       │   └── leadDao.js
+│       ├── services/
+│       │   └── leadService.js
+│       └── validators/
+│           └── leadValidator.js
+├── properties/
+│   └── envProperties.js        # Environment configuration
+├── responses/
+│   ├── responseConstants.js    # Response message constants
+│   └── responses.js            # Standard response handlers
+├── services/                   # Shared services
+│   ├── jwtService.js           # JWT token generation & verification
+│   ├── mailContent.js          # Email templates
+│   ├── mailService.js          # Email service
+│   ├── pwdServices.js          # Password hashing & validation
+│   └── serverService.js        # Server configuration
+├── startup/
+│   └── index.js                # Application initialization
+└── validators/
+    ├── authValidator.js        # Authentication validators
+    └── joiValidators.js        # Common validators
 ```
 
-## 🛠️ Installation & Setup
+## 🏗️ Architecture Pattern
+
+This project follows a **modular architecture** where each feature has its own folder with a consistent internal structure:
+
+### Module Structure
+Each module (login, register, customer, lead) follows this pattern:
+
+- **controllers/** - Handle HTTP requests/responses
+- **dao/** - Data Access Objects for database operations
+- **services/** - Business logic layer
+- **validators/** - Input validation rules
+- **index.js** - Module route configuration
+
+### Shared Components
+Common functionality is organized at the root level:
+
+- **database/** - Database connection libraries
+- **logging/** - Winston logging utilities
+- **middlewares/** - Express middleware (auth, error handling, validation)
+- **properties/** - Environment and configuration
+- **responses/** - Standard response handlers
+- **services/** - Shared services (JWT, mail, password, etc.)
+- **validators/** - Shared validation logic
+
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js (v14 or higher)
 - MySQL (v5.7 or higher)
 - npm or yarn
 
-### 1. Clone & Install Dependencies
+### Installation
 
+1. Clone the repository
 ```bash
-cd d:\CRM
+git clone <repository-url>
+cd CRM
+```
+
+2. Install dependencies
+```bash
 npm install
 ```
 
-### 2. Database Setup
-
-```bash
-# Login to MySQL
-mysql -u root -p
-
-# Run the setup script
-source database/setup.sql
-
-# Or manually create the database
-CREATE DATABASE crm_db;
-```
-
-### 3. Environment Configuration
-
-```bash
-# Copy the example env file
-cp .env.example .env
-```
-
-Edit `.env` with your configuration:
-
+3. Configure environment variables
+Create a `.env` file in the root directory:
 ```env
+# Server Configuration
 PORT=3000
 NODE_ENV=development
 
+# Database Configuration
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=crm_db
 DB_PORT=3306
 
-JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
-JWT_EXPIRES_IN=24h
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key_change_in_production
+JWT_EXPIRES_IN=15m
+REFRESH_TOKEN_EXPIRY=7d
 
-CORS_ORIGIN=http://localhost:3000
+# CORS Configuration
+CORS_ORIGIN=*
+
+# Email Configuration (optional)
+EMAIL_SERVICE=gmail
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+EMAIL_FROM=noreply@crm.com
+
+# Application URLs
+FRONTEND_URL=http://localhost:3000
+BACKEND_URL=http://localhost:3000
 ```
 
-### 4. Initialize Database Tables
+4. Initialize the database
+The database tables will be created automatically on first run.
 
-The application will automatically create tables on first run, or you can manually run:
-
-```javascript
-const { initializeDatabase } = require('./src/config/database');
-initializeDatabase();
-```
-
-### 5. Start the Server
-
+5. Start the server
 ```bash
 # Development mode with auto-reload
 npm run dev
@@ -136,236 +175,80 @@ npm run dev
 npm start
 ```
 
-Server will start at `http://localhost:3000`
-
 ## 📡 API Endpoints
 
-### Authentication
+### Authentication (`/api/auth`)
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `POST /api/auth/refresh` - Refresh access token
+- `GET /api/auth/profile` - Get user profile (protected)
+- `POST /api/auth/logout` - Logout user (protected)
+- `GET /api/auth/users` - Get all users (admin only)
+- `PATCH /api/auth/users/:id/verify` - Verify user (admin only)
+- `DELETE /api/auth/users/:id` - Delete user (admin only)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/auth/register` | Register new user | No |
-| POST | `/api/auth/login` | Login user | No |
-| GET | `/api/auth/profile` | Get current user profile | Yes |
+### Customers (`/api/customers`)
+- `POST /api/customers` - Create customer (protected)
+- `GET /api/customers` - Get all customers (protected)
+- `GET /api/customers/:id` - Get customer by ID (protected)
+- `PUT /api/customers/:id` - Update customer (protected)
+- `DELETE /api/customers/:id` - Delete customer (protected)
 
-### Customers
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/customers` | Create customer | Yes |
-| GET | `/api/customers` | Get all customers (with pagination & search) | Yes |
-| GET | `/api/customers/:id` | Get customer by ID | Yes |
-| PUT | `/api/customers/:id` | Update customer | Yes |
-| DELETE | `/api/customers/:id` | Delete customer | Yes |
-
-### Leads
-
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/leads` | Create lead | Yes |
-| GET | `/api/leads` | Get all leads (with pagination, search & status filter) | Yes |
-| GET | `/api/leads/:id` | Get lead by ID | Yes |
-| PUT | `/api/leads/:id` | Update lead | Yes |
-| DELETE | `/api/leads/:id` | Delete lead | Yes |
-
-## 📝 API Usage Examples
-
-### 1. Register User
-
-```bash
-POST /api/auth/register
-Content-Type: application/json
-
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "password": "password123",
-  "role": "user"
-}
-```
-
-### 2. Login
-
-```bash
-POST /api/auth/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "password123"
-}
-
-Response:
-{
-  "success": true,
-  "message": "Login successful",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-    "user": {
-      "id": 1,
-      "name": "John Doe",
-      "email": "john@example.com",
-      "role": "user"
-    }
-  }
-}
-```
-
-### 3. Create Customer
-
-```bash
-POST /api/customers
-Authorization: Bearer <your_token>
-Content-Type: application/json
-
-{
-  "name": "ABC Company",
-  "email": "contact@abc.com",
-  "phone": "+1234567890",
-  "company": "ABC Corp",
-  "address": "123 Main St",
-  "status": "active"
-}
-```
-
-### 4. Get Customers with Pagination & Search
-
-```bash
-GET /api/customers?page=1&limit=10&search=ABC
-Authorization: Bearer <your_token>
-
-Response:
-{
-  "success": true,
-  "data": [...],
-  "pagination": {
-    "total": 50,
-    "page": 1,
-    "limit": 10,
-    "totalPages": 5
-  }
-}
-```
-
-### 5. Get Leads with Status Filter
-
-```bash
-GET /api/leads?page=1&limit=10&status=new&search=tech
-Authorization: Bearer <your_token>
-```
+### Leads (`/api/leads`)
+- `POST /api/leads` - Create lead (protected)
+- `GET /api/leads` - Get all leads (protected)
+- `GET /api/leads/:id` - Get lead by ID (protected)
+- `PUT /api/leads/:id` - Update lead (protected)
+- `DELETE /api/leads/:id` - Delete lead (protected)
 
 ## 🔐 Authentication
 
-All protected endpoints require a JWT token in the Authorization header:
+This API uses JWT (JSON Web Tokens) for authentication:
 
-```
-Authorization: Bearer <your_jwt_token>
-```
+1. **Access Token**: Short-lived token (15 minutes) for API requests
+2. **Refresh Token**: Long-lived token (7 days) for getting new access tokens
 
-Token is returned upon successful login and expires in 24 hours (configurable).
+Tokens can be sent in two ways:
+- **Cookie**: Automatically set by the server
+- **Authorization Header**: `Bearer <token>`
 
-## ✅ Input Validation
+## 🛡️ Middleware
 
-All endpoints validate input data:
-- Email format validation
-- Required field checks
-- Length constraints
-- Enum value validation
-- SQL injection prevention
+- **authMiddleware**: Validates JWT tokens
+- **roleMiddleware**: Role-based access control (admin/user)
+- **checkVerified**: Ensures user email is verified
+- **errorHandler**: Centralized error handling
+- **validate**: Input validation using express-validator
 
-## 🐛 Error Handling
+## 📝 Logging
 
-The API returns consistent error responses:
-
-```json
-{
-  "success": false,
-  "message": "Error description"
-}
-```
-
-HTTP Status Codes:
-- `200` - Success
-- `201` - Created
-- `400` - Bad Request
-- `401` - Unauthorized
-- `404` - Not Found
-- `500` - Internal Server Error
-
-## 📊 Logging
-
-Logs are stored in the `logs/` directory:
-- `combined-{date}.log` - All logs
-- `error-{date}.log` - Error logs only
-- `exceptions-{date}.log` - Uncaught exceptions
-- `rejections-{date}.log` - Unhandled promise rejections
-
-Logs rotate daily and keep 14 days of history.
-
-## 🔧 Configuration
-
-Key configuration options in `.env`:
-
-- `PORT` - Server port (default: 3000)
-- `NODE_ENV` - Environment (development/production)
-- `DB_*` - Database credentials
-- `JWT_SECRET` - Secret key for JWT signing
-- `JWT_EXPIRES_IN` - Token expiration time
-- `CORS_ORIGIN` - Allowed CORS origin
+Winston is used for logging with daily rotating files:
+- `logs/error-{DATE}.log` - Error logs
+- `logs/combined-{DATE}.log` - All logs
+- Console output in development mode
 
 ## 🧪 Testing
 
-Check server health:
-
 ```bash
-GET /health
-
-Response:
-{
-  "status": "OK",
-  "message": "CRM Backend is running",
-  "timestamp": "2026-01-19T..."
-}
+npm test
 ```
 
-## 📦 Dependencies
+## 🤝 Contributing
 
-**Production:**
-- express - Web framework
-- mysql2 - MySQL client
-- jsonwebtoken - JWT authentication
-- bcryptjs - Password hashing
-- express-validator - Input validation
-- winston - Logging
-- dotenv - Environment variables
-- cors - CORS middleware
-
-**Development:**
-- nodemon - Auto-reload during development
-
-## 🚀 Deployment
-
-1. Set `NODE_ENV=production` in `.env`
-2. Update `JWT_SECRET` with a strong secret
-3. Configure production database credentials
-4. Set appropriate `CORS_ORIGIN`
-5. Use a process manager like PM2:
-
-```bash
-npm install -g pm2
-pm2 start server.js --name crm-backend
-pm2 save
-pm2 startup
-```
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## 📄 License
 
 ISC
 
-## 👤 Author
+## 👥 Author
 
 Your Name
 
 ---
 
-Built with ❤️ using Node.js, Express, and MySQL
+**Note**: This project has been restructured from the original MVC pattern to follow a modular architecture for better scalability and maintainability.
