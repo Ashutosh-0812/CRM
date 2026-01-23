@@ -1,4 +1,4 @@
-const { pool } = require('../../../database/mysqllib').getPool();
+const pool = require('../../../database/mysqllib').getPool();
 
 class RegisterDao {
   static async createUser(userData) {

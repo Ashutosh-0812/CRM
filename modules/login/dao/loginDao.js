@@ -1,4 +1,4 @@
-const { pool } = require('../../../database/mysqllib').getPool();
+const pool = require('../../../database/mysqllib').getPool();
 
 class LoginDao {
   static async findUserByEmail(email) {

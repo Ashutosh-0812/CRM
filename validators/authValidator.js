@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const Joi = require('joi');
 const { emailValidator, passwordValidator, nameValidator } = require('./joiValidators');
 
 const registerValidation = [

@@ -1,15 +1,13 @@
-const { body } = require('express-validator');
+const Joi = require('joi');
+const { emailSchema } = require('../../../validators/joiValidators');
 
-const loginValidation = [
-  body('email')
-    .trim()
-    .notEmpty().withMessage('Email is required')
-    .isEmail().withMessage('Please provide a valid email')
-    .normalizeEmail(),
-  
-  body('password')
-    .notEmpty().withMessage('Password is required')
-];
+const loginValidation = Joi.object({
+  email: emailSchema,
+  password: Joi.string().required().messages({
+    'string.empty': 'Password is required',
+    'any.required': 'Password is required'
+  })
+});
 
 module.exports = {
   loginValidation

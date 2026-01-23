@@ -27,12 +27,12 @@ const authMiddleware = async (req, res, next) => {
     next();
   } catch (error) {
     if (error.message === 'Token expired') {
-      return next(new AppError('Token expired', 401, 'TOKEN_EXPIRED'));
+      return new AppError('Token expired', 401, 'TOKEN_EXPIRED');
     }
     if (error.message === 'Invalid token') {
-      return next(new AppError('Invalid token', 401, 'INVALID_TOKEN'));
+      return new AppError('Invalid token', 401, 'INVALID_TOKEN');
     }
-    next(error);
+    next();
   }
 };
 

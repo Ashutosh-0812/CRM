@@ -1,6 +1,6 @@
 const mysqlLib = require('./mysqllib');
 const mongoLib = require('./mongolib');
-const redisLib = require('./redislib');
+
 
 const initializeAllDatabases = async () => {
   try {
@@ -11,8 +11,7 @@ const initializeAllDatabases = async () => {
     // MongoDB connection (optional - uncomment if needed)
     // await mongoLib.connectMongoDB();
 
-    // Redis connection (optional - uncomment if needed)
-    // await redisLib.createClient();
+
 
     console.log(' All databases initialized successfully');
     return true;
@@ -25,6 +24,6 @@ const initializeAllDatabases = async () => {
 module.exports = {
   mysql: mysqlLib,
   mongodb: mongoLib,
-  redis: redisLib,
+  
   initializeAllDatabases
 };

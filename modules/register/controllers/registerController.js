@@ -3,9 +3,13 @@ const JWTService = require('../../../services/jwtService');
 const RegisterDao = require('../dao/registerDao');
 const Response = require('../../../responses/responses');
 const { asyncHandler } = require('../../../middlewares/errorHandler');
+const logger = require('../../../logging/logging');
 
 class RegisterController {
   static register = asyncHandler(async (req, res) => {
+    const apiReference = { module: 'register', api: 'register' };
+    logger.log(apiReference, 'Register request received', { email: req.body.email });
+    
     const { name, email, password, role } = req.body;
 
     // Register user
@@ -32,6 +36,7 @@ class RegisterController {
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
+    logger.log(apiReference, 'User registered successfully', { userId: user.id, email: user.email });
     Response.created(res, {
       userId: user.id,
       email: user.email,

@@ -8,14 +8,14 @@ const logger = require('../logging/logging');
 
 const initializeApp = async () => {
   try {
-    // Initialize database
+    
     logger.info('Initializing database...');
     await database.initializeAllDatabases();
 
-    // Create Express app
+    
     const app = express();
 
-    // Configure server middleware
+   
     configureServer(app);
 
     // Register API routes
@@ -47,9 +47,9 @@ const startServer = async (app) => {
     const PORT = envProperties.port;
 
     app.listen(PORT, () => {
-      logger.info(`🚀 CRM Backend server started on http://localhost:${PORT}`);
-      logger.info(`📦 Environment: ${envProperties.nodeEnv}`);
-      logger.info(`🔍 API Documentation: http://localhost:${PORT}/health`);
+      logger.info(` CRM Backend server started on http://localhost:${PORT}`);
+      logger.info(` Environment: ${envProperties.nodeEnv}`);
+      logger.info(` API Documentation: http://localhost:${PORT}/health`);
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

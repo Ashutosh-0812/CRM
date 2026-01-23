@@ -2,30 +2,44 @@ const winston = require('winston');
 const DailyRotateFile = require('winston-daily-rotate-file');
 const path = require('path');
 
-// Define log format
+
 const logFormat = winston.format.combine(
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
   winston.format.errors({ stack: true }),
   winston.format.splat(),
   winston.format.json()
 );
 
-// Console format for development
+
 const consoleFormat = winston.format.combine(
   winston.format.colorize(),
-  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  winston.format.printf(({ timestamp, level, message, ...meta }) => {
-    return `${timestamp} [${level}]: ${message} ${Object.keys(meta).length ? JSON.stringify(meta, null, 2) : ''}`;
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+  winston.format.printf(({ timestamp, level, message, module, api, ...meta }) => {
+    let logMessage = `-->${timestamp} :----:`;
+    
+    if (module) {
+      logMessage += ` ${module}`;
+    }
+    if (api) {
+      logMessage += ` :=: ${api}`;
+    }
+    logMessage += ` :=: ${message}`;
+    
+    if (Object.keys(meta).length) {
+      logMessage += ` ${JSON.stringify(meta)}`;
+    }
+    
+    return logMessage;
   })
 );
 
-// Create logger instance
+
 const logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: logFormat,
   defaultMeta: { service: 'crm-backend' },
   transports: [
-    // Error logs
+  
     new DailyRotateFile({
       filename: path.join('logs', 'error-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
@@ -33,7 +47,7 @@ const logger = winston.createLogger({
       maxFiles: '30d',
       maxSize: '20m'
     }),
-    // Combined logs
+ 
     new DailyRotateFile({
       filename: path.join('logs', 'combined-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
@@ -43,11 +57,46 @@ const logger = winston.createLogger({
   ]
 });
 
-// Add console transport in development
+
 if (process.env.NODE_ENV !== 'production') {
   logger.add(new winston.transports.Console({
     format: consoleFormat
   }));
 }
 
-module.exports = logger;
+// Helper functions for logging with module and API context
+const log = (apiReference, message, metadata = {}) => {
+  if (apiReference && apiReference.module && apiReference.api) {
+    logger.info(message, {
+      module: apiReference.module,
+      api: apiReference.api,
+      ...metadata
+    });
+  } else {
+    logger.info(message, metadata);
+  }
+};
+
+const logError = (apiReference, message, metadata = {}) => {
+  if (apiReference && apiReference.module && apiReference.api) {
+    logger.error(message, {
+      module: apiReference.module,
+      api: apiReference.api,
+      ...metadata
+    });
+  } else {
+    logger.error(message, metadata);
+  }
+};
+
+// Export everything separately to avoid overriding winston's native methods
+module.exports = {
+  ...logger,
+  log,
+  logError,
+  // Expose winston methods directly
+  info: logger.info.bind(logger),
+  error: logger.error.bind(logger),
+  warn: logger.warn.bind(logger),
+  debug: logger.debug.bind(logger)
+};

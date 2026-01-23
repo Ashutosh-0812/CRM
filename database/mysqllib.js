@@ -18,11 +18,11 @@ const getConnection = async () => {
 const testConnection = async () => {
   try {
     const connection = await getConnection();
-    console.log('✅ MySQL Database connected successfully');
+    console.log(' MySQL Database connected successfully');
     connection.release();
     return true;
   } catch (error) {
-    console.error('❌ MySQL Database connection failed:', error.message);
+    console.error('MySQL Database connection failed:', error.message);
     return false;
   }
 };
@@ -31,7 +31,7 @@ const initializeDatabase = async () => {
   try {
     const connection = await getConnection();
     
-    // Users table
+  
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -48,7 +48,7 @@ const initializeDatabase = async () => {
       )
     `);
 
-    // Customers table
+
     await connection.query(`
       CREATE TABLE IF NOT EXISTS customers (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -67,7 +67,7 @@ const initializeDatabase = async () => {
       )
     `);
 
-    // Leads table
+  
     await connection.query(`
       CREATE TABLE IF NOT EXISTS leads (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -90,11 +90,11 @@ const initializeDatabase = async () => {
       )
     `);
 
-    console.log('✅ Database tables initialized successfully');
+    console.log('Database tables initialized successfully');
     connection.release();
     return true;
   } catch (error) {
-    console.error('❌ Database initialization failed:', error.message);
+    console.error('Database initialization failed:', error.message);
     throw error;
   }
 };

@@ -1,37 +1,60 @@
-const { body, param, query } = require('express-validator');
+const Joi = require('joi');
 
 // Common validators
-const idValidator = () => param('id').isInt({ min: 1 }).withMessage('Invalid ID');
+const idSchema = Joi.number().integer().min(1).required().messages({
+  'number.base': 'Invalid ID',
+  'number.min': 'Invalid ID',
+  'any.required': 'ID is required'
+});
 
-const emailValidator = () => body('email').isEmail().withMessage('Invalid email address').normalizeEmail();
+const emailSchema = Joi.string().email().required().messages({
+  'string.email': 'Invalid email address',
+  'any.required': 'Email is required'
+});
 
-const passwordValidator = () => body('password')
-  .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-  .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
-  .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
-  .matches(/\d/).withMessage('Password must contain at least one number')
-  .matches(/[!@#$%^&*(),.?":{}|<>]/).withMessage('Password must contain at least one special character');
+const passwordSchema = Joi.string()
+  .min(8)
+  .pattern(/[A-Z]/, 'uppercase')
+  .pattern(/[a-z]/, 'lowercase')
+  .pattern(/\d/, 'number')
+  .pattern(/[!@#$%^&*(),.?":{}|<>]/, 'special')
+  .required()
+  .messages({
+    'string.min': 'Password must be at least 8 characters long',
+    'string.pattern.name': 'Password must contain at least one {#name} {#name, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character}}',
+    'string.pattern.base': 'Password must contain uppercase, lowercase, number and special character',
+    'any.required': 'Password is required'
+  });
 
-const nameValidator = (field = 'name') => body(field)
-  .trim()
-  .notEmpty().withMessage(`${field} is required`)
-  .isLength({ min: 2, max: 255 }).withMessage(`${field} must be between 2 and 255 characters`);
+const nameSchema = Joi.string().trim().min(2).max(255).required().messages({
+  'string.empty': 'Name is required',
+  'string.min': 'Name must be at least 2 characters',
+  'string.max': 'Name must not exceed 255 characters',
+  'any.required': 'Name is required'
+});
 
-const phoneValidator = (field = 'phone') => body(field)
-  .optional()
-  .matches(/^[\d\s\-\+\(\)]+$/).withMessage('Invalid phone number format');
+const phoneSchema = Joi.string().pattern(/^[\d\s\-\+\(\)]+$/).optional().allow('').messages({
+  'string.pattern.base': 'Invalid phone number format'
+});
 
-const paginationValidator = () => [
-  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
-  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('search').optional().trim().isLength({ max: 255 }).withMessage('Search query too long')
-];
+const paginationSchema = Joi.object({
+  page: Joi.number().integer().min(1).optional().default(1).messages({
+    'number.min': 'Page must be a positive integer'
+  }),
+  limit: Joi.number().integer().min(1).max(100).optional().default(10).messages({
+    'number.min': 'Limit must be at least 1',
+    'number.max': 'Limit must not exceed 100'
+  }),
+  search: Joi.string().trim().max(255).optional().allow('').messages({
+    'string.max': 'Search query too long'
+  })
+});
 
 module.exports = {
-  idValidator,
-  emailValidator,
-  passwordValidator,
-  nameValidator,
-  phoneValidator,
-  paginationValidator
+  idSchema,
+  emailSchema,
+  passwordSchema,
+  nameSchema,
+  phoneSchema,
+  paginationSchema
 };
