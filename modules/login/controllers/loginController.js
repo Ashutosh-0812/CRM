@@ -100,19 +100,12 @@ class LoginController {
     logger.log(apiReference, 'Verify user request', { userId: req.params.id });
     const { id } = req.params;
     await LoginService.verifyUser(id);
-    
-    logger.log(apiReference, 'User verified successfully', { userId: id });
     Response.success(res, null, 'User verified successfully');
   });
 
   static deleteUser = asyncHandler(async (req, res) => {
-    const apiReference = { module: 'login', api: 'deleteUser' };
     const { id } = req.params;
-    logger.log(apiReference, 'Delete user request', { userId: id, adminId: req.user.id });
-    
     await LoginService.deleteUser(id, req.user.id);
-    
-    logger.log(apiReference, 'User deleted successfully', { userId: id });
     Response.success(res, null, 'User deleted successfully');
   });
 }

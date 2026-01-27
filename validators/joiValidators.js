@@ -14,15 +14,14 @@ const emailSchema = Joi.string().email().required().messages({
 
 const passwordSchema = Joi.string()
   .min(8)
-  .pattern(/[A-Z]/, 'uppercase')
-  .pattern(/[a-z]/, 'lowercase')
-  .pattern(/\d/, 'number')
-  .pattern(/[!@#$%^&*(),.?":{}|<>]/, 'special')
+  .pattern(/[A-Z]/)
+  .pattern(/[a-z]/)
+  .pattern(/\d/)
+  .pattern(/[!@#$%^&*(),.?":{}|<>]/)
   .required()
   .messages({
     'string.min': 'Password must be at least 8 characters long',
-    'string.pattern.name': 'Password must contain at least one {#name} {#name, select, uppercase{uppercase letter} lowercase{lowercase letter} number{number} special{special character}}',
-    'string.pattern.base': 'Password must contain uppercase, lowercase, number and special character',
+    'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
     'any.required': 'Password is required'
   });
 

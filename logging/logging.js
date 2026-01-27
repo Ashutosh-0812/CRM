@@ -10,7 +10,7 @@ const logFormat = winston.format.combine(
   winston.format.json()
 );
 
-
+   
 const consoleFormat = winston.format.combine(
   winston.format.colorize(),
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
