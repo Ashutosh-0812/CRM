@@ -248,7 +248,7 @@ ISC
 ## 👥 Author
 
 Your Name
+Ashutosh Singh
 
----
 
 **Note**: This project has been restructured from the original MVC pattern to follow a modular architecture for better scalability and maintainability.
