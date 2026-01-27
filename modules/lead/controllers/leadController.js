@@ -5,8 +5,8 @@ const logger = require('../../../logging/logging');
 
 class LeadController {
   static createLead = asyncHandler(async (req, res) => {
-    const apiReference = { module: 'lead', api: 'createLead' };
-    logger.log(apiReference, 'Create lead request', { name: req.body.name, email: req.body.email });
+    const apiReference = { module: 'lead', api: 'createLead', apiId : req.apiId };
+    logger.log(apiReference, 'Create lead request', { name: req.body.name, email: req.body.email, apiId : req.apiId});
     
     const { name, email, phone, company, source, status, notes, assigned_to } = req.body;
 

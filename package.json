@@ -28,6 +28,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^9.1.4",
     "mysql2": "^3.6.5",
+    "uuidv4": "^6.2.13",
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1"
   },

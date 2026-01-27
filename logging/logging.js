@@ -66,10 +66,11 @@ if (process.env.NODE_ENV !== 'production') {
 
 // Helper functions for logging with module and API context
 const log = (apiReference, message, metadata = {}) => {
-  if (apiReference && apiReference.module && apiReference.api) {
+  if (apiReference) {
     logger.info(message, {
       module: apiReference.module,
       api: apiReference.api,
+      apiId: apiReference.apiId, 
       ...metadata
     });
   } else {
@@ -78,10 +79,11 @@ const log = (apiReference, message, metadata = {}) => {
 };
 
 const logError = (apiReference, message, metadata = {}) => {
-  if (apiReference && apiReference.module && apiReference.api) {
+  if (apiReference) {
     logger.error(message, {
       module: apiReference.module,
       api: apiReference.api,
+      apiId: apiReference.apiId, 
       ...metadata
     });
   } else {

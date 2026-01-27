@@ -6,7 +6,7 @@ const logger = require('../../../logging/logging');
 
 class LoginController {
   static login = asyncHandler(async (req, res) => {
-    const apiReference = { module: 'login', api: 'login' };
+    const apiReference = { module: 'login', api: 'login',apiId: req.apiId };
     logger.log(apiReference, 'Login request received', { email: req.body.email });
     
     const { email, password } = req.body;

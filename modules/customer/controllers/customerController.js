@@ -5,7 +5,8 @@ const logger = require('../../../logging/logging');
 
 class CustomerController {
   static createCustomer = asyncHandler(async (req, res) => {
-    const apiReference = { module: 'customer', api: 'createCustomer' };
+  
+    const apiReference = { module: 'customer', api: 'createCustomer', apiId: req.apiId };
     logger.log(apiReference, 'Create customer request', { name: req.body.name, email: req.body.email });
     
     const { name, email, phone, company, address, status } = req.body;

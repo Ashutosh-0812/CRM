@@ -3,7 +3,9 @@ const router = express.Router();
 const LoginController = require('./controllers/loginController');
 const { authMiddleware, isAdmin, validate } = require('../../middlewares');
 const { loginValidation } = require('./validators/loginValidator');
+const requestIdMiddleware = require('../../middlewares/requestIdMiddleware')
 
+router.use(requestIdMiddleware)
 
 router.post('/login', validate(loginValidation), LoginController.login);
 router.post('/refresh', LoginController.refreshToken);

@@ -7,7 +7,7 @@ const logger = require('../../../logging/logging');
 
 class RegisterController {
   static register = asyncHandler(async (req, res) => {
-    const apiReference = { module: 'register', api: 'register' };
+    const apiReference = { module: 'register', api: 'register',apiId: req.apiId };
     logger.log(apiReference, 'Register request received', { email: req.body.email });
     
     const { name, email, password, role } = req.body;
