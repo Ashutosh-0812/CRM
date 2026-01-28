@@ -24,7 +24,7 @@ const initializeApp = async () => {
     app.use('/api/customers', customerRoutes);
     app.use('/api/leads', leadRoutes);
 
-    // 404 handler
+   
     app.use((req, res) => {
       res.status(404).json({
         success: false,
