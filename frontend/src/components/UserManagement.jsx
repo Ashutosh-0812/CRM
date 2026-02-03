@@ -273,7 +273,7 @@ const UserManagement = () => {
       {/* Pending Verification Tab */}
       {activeTab === 'pending' && (
         <div className="pending-users-section">
-          <h2>Users Pending Verification</h2>
+          
           {(!unverifiedUsers || !Array.isArray(unverifiedUsers) || unverifiedUsers.length === 0) ? (
             <div className="no-data">No users pending verification</div>
           ) : (
