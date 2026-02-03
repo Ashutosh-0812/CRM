@@ -4,11 +4,29 @@ const cookieParser = require('cookie-parser');
 const envProperties = require('../properties/envProperties');
 
 const configureServer = (app) => {
- 
-  app.use(cors({
-    origin: envProperties.corsOrigin,
-    credentials: true
-  }));
+  // CORS Configuration
+  const corsOptions = {
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = [
+        'http://localhost:5173',
+        envProperties.corsOrigin
+      ].filter(Boolean); // Remove any undefined values
+      
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  };
+  
+  app.use(cors(corsOptions));
 
 
   app.use(express.json());

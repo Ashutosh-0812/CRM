@@ -2,7 +2,7 @@ const express = require('express');
 const database = require('../database');
 const configureServer = require('../services/serverService');
 const { errorHandler } = require('../middlewares');
-const { loginRoutes, registerRoutes, customerRoutes, leadRoutes } = require('../modules');
+const { loginRoutes, registerRoutes, customerRoutes, leadRoutes, adminRoutes } = require('../modules');
 const envProperties = require('../properties/envProperties');
 const logger = require('../logging/logging');
 
@@ -23,6 +23,7 @@ const initializeApp = async () => {
     app.use('/api/auth', registerRoutes);
     app.use('/api/customers', customerRoutes);
     app.use('/api/leads', leadRoutes);
+    app.use('/api/admin', adminRoutes);
 
    
     app.use((req, res) => {
