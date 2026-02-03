@@ -16,18 +16,29 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
+    
+    
+      
+      const token = localStorage.getItem('accessToken');
+      const user = localStorage.getItem('user');
+     
+      
       const response = await adminAPI.getAllUsers({
         page: currentPage,
         limit: 10,
         search: searchTerm,
         status: statusFilter
       });
-      setUsers(response.data.users || []);
+      
+    
+      
+      setUsers(response.data.data || []);
       setTotalPages(response.data.pagination?.pages || 1);
     } catch (err) {
       setError('Failed to fetch users');
       setUsers([]); // Ensure users is always an array
       console.error('Error fetching users:', err);
+      console.error('Error response:', err.response);
     } finally {
       setLoading(false);
     }
@@ -36,11 +47,24 @@ const UserManagement = () => {
   // Fetch unverified users
   const fetchUnverifiedUsers = async () => {
     try {
+    
       const response = await adminAPI.getUnverifiedUsers();
-      setUnverifiedUsers(response.data || []);
+     
+      
+      // More defensive approach to ensure we always have an array
+      let users = [];
+      if (response.data && Array.isArray(response.data)) {
+        users = response.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data)) {
+        users = response.data.data;
+      } else if (response.data && Array.isArray(response.data.users)) {
+        users = response.data.users;
+      }
+      
+      setUnverifiedUsers(users);
     } catch (err) {
       setUnverifiedUsers([]); // Ensure unverifiedUsers is always an array
-      console.error('Error fetching unverified users:', err);
+    
     }
   };
 
@@ -60,7 +84,7 @@ const UserManagement = () => {
       
       alert(`User ${action}d successfully!`);
     } catch (err) {
-      console.error(`Error ${action}ing user:`, err);
+    
       alert(`Failed to ${action} user`);
     }
   };
@@ -72,7 +96,7 @@ const UserManagement = () => {
       await fetchUsers();
       alert('User role updated successfully!');
     } catch (err) {
-      console.error('Error updating user role:', err);
+      
       alert('Failed to update user role');
     }
   };
@@ -250,11 +274,11 @@ const UserManagement = () => {
       {activeTab === 'pending' && (
         <div className="pending-users-section">
           <h2>Users Pending Verification</h2>
-          {unverifiedUsers && unverifiedUsers.length === 0 ? (
+          {(!unverifiedUsers || !Array.isArray(unverifiedUsers) || unverifiedUsers.length === 0) ? (
             <div className="no-data">No users pending verification</div>
           ) : (
             <div className="pending-users-grid">
-              {unverifiedUsers && unverifiedUsers.map((user) => (
+              {unverifiedUsers.map((user) => (
                 <div key={user.id} className="pending-user-card">
                   <div className="user-info">
                     <h3>{user.name}</h3>
