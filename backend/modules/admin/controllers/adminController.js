@@ -45,6 +45,8 @@ class AdminController {
         const { id } = req.params;
         const { action } = req.body;
         
+       
+        
         logger.log(apiReference, 'Verify user request', { userId: id, action });
         
         const result = await AdminService.verifyUser(id, action);
