@@ -126,7 +126,7 @@ const CustomerList = () => {
                         className="btn btn-secondary btn-sm"
                       >
                         Edit
-                      </Link>
+                      </Link>  
                       <button
                         onClick={() => handleDelete(customer.id)}
                         className="btn btn-danger btn-sm"

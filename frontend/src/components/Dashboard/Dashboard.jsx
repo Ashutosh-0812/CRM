@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  }, [setStats]);
 
   const fetchDashboardData = async () => {
     try {
